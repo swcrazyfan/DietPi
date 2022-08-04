@@ -45,10 +45,10 @@
 	# - Apply override LC_ALL and default LANG for current script
 	export LC_ALL='C.UTF-8' LANG='C.UTF-8'
 
-	# Set $PATH variable to include all expected default binary locations, since we don't know the current system setup: https://github.com/MichaIng/DietPi/issues/3206
+	# Set $PATH variable to include all expected default binary locations, since we don't know the current system setup: https://hub.fastgit.xyz/MichaIng/DietPi/issues/3206
 	export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-	# Mount all filesystems defined in /etc/fstab without "noauto" option: https://github.com/MichaIng/DietPi/issues/5174
+	# Mount all filesystems defined in /etc/fstab without "noauto" option: https://hub.fastgit.xyz/MichaIng/DietPi/issues/5174
 	mount -a
 
 	# Make /tmp a tmpfs if it is not yet a dedicated mount
@@ -60,7 +60,7 @@
 	fi
 
 	# Work inside /tmp tmpfs to reduce disk I/O and speed up download and unpacking
-	# - Save full script path beforehand: https://github.com/MichaIng/DietPi/pull/2341#discussion_r241784962
+	# - Save full script path beforehand: https://hub.fastgit.xyz/MichaIng/DietPi/pull/2341#discussion_r241784962
 	FP_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 	cd /tmp || exit 1
 
@@ -68,9 +68,9 @@
 	# - Remove unwanted APT configs
 	#	RPi: Allow PDiffs since the "slow implementation" argument is outdated and PDiffs allow lower download size and less disk I/O
 	[[ -f '/etc/apt/apt.conf.d/50raspi' ]] && rm -v /etc/apt/apt.conf.d/50raspi
-	#	https://github.com/MichaIng/DietPi/issues/4083
+	#	https://hub.fastgit.xyz/MichaIng/DietPi/issues/4083
 	rm -fv /etc/apt/sources.list.d/vscode.list /etc/apt/trusted.gpg.d/microsoft.gpg /etc/apt/preferences.d/3rd_parties.pref
-	#	Meveric: https://github.com/MichaIng/DietPi/issues/1285#issuecomment-355759321
+	#	Meveric: https://hub.fastgit.xyz/MichaIng/DietPi/issues/1285#issuecomment-355759321
 	[[ -f '/etc/apt/sources.list.d/deb-multimedia.list' ]] && rm -v /etc/apt/sources.list.d/deb-multimedia.list
 	[[ -f '/etc/apt/preferences.d/deb-multimedia-pin-99' ]] && rm -v /etc/apt/preferences.d/deb-multimedia-pin-99
 	[[ -f '/etc/apt/preferences.d/backports' ]] && rm -v /etc/apt/preferences.d/backports
@@ -79,7 +79,7 @@
 	#	Conflicting configs
 	rm -fv /etc/apt/apt.conf.d/*{recommends,armbian}*
 	# - Apply wanted APT configs: Overwritten by DietPi code archive
-	cat << '_EOF_' > /etc/apt/apt.conf.d/97dietpi # https://raw.githubusercontent.com/MichaIng/DietPi/dev/rootfs/etc/apt/apt.conf.d/97dietpi
+	cat << '_EOF_' > /etc/apt/apt.conf.d/97dietpi # https://raw.fastgit.org/MichaIng/DietPi/dev/rootfs/etc/apt/apt.conf.d/97dietpi
 APT::Install-Recommends "false";
 APT::Install-Suggests "false";
 APT::AutoRemove::RecommendsImportant "false";
@@ -146,7 +146,7 @@ _EOF_
 	#------------------------------------------------------------------------------------------------
 	# NB: We have to manually handle errors, until DietPi-Globals are successfully loaded.
 	# Download
-	if ! curl -sSfL "https://raw.githubusercontent.com/$GITOWNER/DietPi/$GITBRANCH/dietpi/func/dietpi-globals" -o dietpi-globals
+	if ! curl -sSfL "https://raw.fastgit.org/$GITOWNER/DietPi/$GITBRANCH/dietpi/func/dietpi-globals" -o dietpi-globals
 	then
 		echo -e '[FAILED] Unable to download dietpi-globals. Aborting...\n'
 		exit 1
@@ -492,7 +492,7 @@ _EOF_
 		G_DIETPI-NOTIFY 3 "$G_PROGRAM_NAME" "[$SETUP_STEP] Downloading and installing DietPi source code"; ((SETUP_STEP++))
 		#------------------------------------------------------------------------------------------------
 
-		G_EXEC_DESC='Downloading source code' G_EXEC curl -sSfLO "https://github.com/$G_GITOWNER/DietPi/archive/$G_GITBRANCH.tar.gz"
+		G_EXEC_DESC='Downloading source code' G_EXEC curl -sSfLO "https://hub.fastgit.xyz/$G_GITOWNER/DietPi/archive/$G_GITBRANCH.tar.gz"
 		[[ -d DietPi-$G_GITBRANCH ]] && G_EXEC_DESC='Removing old source code' G_EXEC rm -R "DietPi-$G_GITBRANCH"
 		G_EXEC_DESC='Unpacking source code' G_EXEC tar xf "$G_GITBRANCH.tar.gz"
 		G_EXEC_DESC='Removing unused files' G_EXEC rm -f "$G_GITBRANCH.tar.gz" "DietPi-$G_GITBRANCH/dietpi/"{pre-patch_file,patch_file,server_version-6}
@@ -606,7 +606,7 @@ _EOF_
 
 		G_AGUP
 
-		# @MichaIng https://github.com/MichaIng/DietPi/pull/1266/files
+		# @MichaIng https://hub.fastgit.xyz/MichaIng/DietPi/pull/1266/files
 		G_DIETPI-NOTIFY 2 'Marking all packages as auto-installed first, to allow effective autoremove afterwards'
 		local apackages
 		mapfile -t apackages < <(apt-mark showmanual)
@@ -703,13 +703,13 @@ _EOF_
 				aPACKAGES_REQUIRED_INSTALL+=('initramfs-tools')
 			fi
 
-			# Entropy daemon: Use modern rng-tools5 on all devices where it has been proven to work, else haveged: https://github.com/MichaIng/DietPi/issues/2806
+			# Entropy daemon: Use modern rng-tools5 on all devices where it has been proven to work, else haveged: https://hub.fastgit.xyz/MichaIng/DietPi/issues/2806
 			if [[ $G_HW_MODEL -lt 10 || $G_HW_MODEL =~ ^(14|15|16|24|29|42|46|49|58|68|72|74|76)$ ]] # RPi, S922X, Odroid C4, RK3399 - 47 NanoPi R4S, Quartz64, Radxa Zero, NanoPi R5S
 			then
 				aPACKAGES_REQUIRED_INSTALL+=('rng-tools5')
 			else
 				aPACKAGES_REQUIRED_INSTALL+=('haveged')
-				# https://github.com/MichaIng/DietPi/issues/4710
+				# https://hub.fastgit.xyz/MichaIng/DietPi/issues/4710
 				if (( $G_HW_ARCH == 2 ))
 				then
 					G_DIETPI-NOTIFY 2 'Applying workaround for haveged entropy daemon bug: https://bugs.debian.org/985196'
@@ -743,7 +743,7 @@ _EOF_
 			fi
 
 			# Kernel/bootloader/firmware
-			# - We need to install those directly to allow G_AGA() autoremove possible older packages later: https://github.com/MichaIng/DietPi/issues/1285#issuecomment-354602594
+			# - We need to install those directly to allow G_AGA() autoremove possible older packages later: https://hub.fastgit.xyz/MichaIng/DietPi/issues/1285#issuecomment-354602594
 			# - Assure that dir for additional sources is present
 			[[ -d '/etc/apt/sources.list.d' ]] || G_EXEC mkdir /etc/apt/sources.list.d
 			# - G_HW_ARCH specific
@@ -771,13 +771,13 @@ _EOF_
 				echo 'do_symlinks=0' > /etc/kernel-img.conf
 				G_EXEC rm -f /{,boot/}{initrd.img,vmlinuz}{,.old}
 
-				# If /boot is on a FAT partition, create a kernel upgrade hook script to remove existing files first: https://github.com/MichaIng/DietPi/issues/4788
+				# If /boot is on a FAT partition, create a kernel upgrade hook script to remove existing files first: https://hub.fastgit.xyz/MichaIng/DietPi/issues/4788
 				if [[ $(findmnt -Ufnro FSTYPE -M /boot) == 'vfat' ]]
 				then
 					G_EXEC mkdir -p /etc/kernel/preinst.d
 					cat << '_EOF_' > /etc/kernel/preinst.d/dietpi
 #!/bin/sh -e
-# Remove old kernel files if existing: https://github.com/MichaIng/DietPi/issues/4788
+# Remove old kernel files if existing: https://hub.fastgit.xyz/MichaIng/DietPi/issues/4788
 {
 # Fail if the package name was not passed, which is done when being invoked by dpkg
 if [ -z "$DPKG_MAINTSCRIPT_PACKAGE" ]
@@ -945,7 +945,7 @@ _EOF_
 			[[ $G_HW_ARCH == 3 ]] || a32bit=('raspi-copies-and-fills')
 			G_AGI raspberrypi-bootloader raspberrypi-kernel libraspberrypi0 libraspberrypi-bin raspberrypi-sys-mods raspberrypi-archive-keyring "${a32bit[@]}"
 
-			# https://github.com/RPi-Distro/raspberrypi-sys-mods/pull/60
+			# https://hub.fastgit.xyz/RPi-Distro/raspberrypi-sys-mods/pull/60
 			[[ -f '/etc/apt/trusted.gpg.d/microsoft.gpg' ]] && G_EXEC rm /etc/apt/trusted.gpg.d/microsoft.gpg
 			[[ -f '/etc/apt/sources.list.d/vscode.list' ]] && G_EXEC rm /etc/apt/sources.list.d/vscode.list
 
@@ -970,7 +970,7 @@ _EOF_
 			# ROCK Pi S: rockpis-dtbo is not required as it doubles the overlays that are already provided (among others) with the kernel package
 			(( $G_HW_MODEL == 73 )) && G_AGI rockpis-rk-ubootimg linux-4.4-rock-pi-s-latest rockchip-overlay u-boot-tools
 
-			# Install Radxa Zero kernel (U-Boot package is not available yet): https://github.com/radxa/apt
+			# Install Radxa Zero kernel (U-Boot package is not available yet): https://hub.fastgit.xyz/radxa/apt
 			# Additionally install bc, required to calculate the initramfs size via custom hook (by Radxa) which updates /boot/uEnv.txt accordingly on initramfs updates
 			# And install "file" which is used to detect whether the kernel image is compressed and in case uncompress it
 			(( $G_HW_MODEL == 74 )) && G_AGI linux-5.10-radxa-zero-latest bc file
@@ -1055,8 +1055,8 @@ _EOF_
 		# - Purge the "important" e2fsprogs if no ext[2-4] filesystem is present on the root partition table
 		# - dbus: Not required for headless images, but sometimes marked as "important", thus not autoremoved.
 		#	+ Workaround for "The following packages have unmet dependencies: glib-networking libgtk-3-0" and alike
-		# - dhcpcd5: https://github.com/MichaIng/DietPi/issues/1560#issuecomment-370136642
-		# - mountall: https://github.com/MichaIng/DietPi/issues/2613
+		# - dhcpcd5: https://hub.fastgit.xyz/MichaIng/DietPi/issues/1560#issuecomment-370136642
+		# - mountall: https://hub.fastgit.xyz/MichaIng/DietPi/issues/2613
 		# - initscripts: Pre-installed on Jessie systems (?), superseded and masked by systemd, but never autoremoved
 		# - chrony: Found left with strange "deinstall ok installed" mark left on Armbian images
 		G_AGP "${ae2fsprogs[@]}" dbus dhcpcd5 mountall initscripts chrony '*office*' '*xfce*' '*qt5*' '*xserver*' '*xorg*' glib-networking libgtk-3-0 libsoup2.4-1 libglib2.0-0 lightdm xl2tpd x11-common
@@ -1165,7 +1165,7 @@ _EOF_
 		# - Source code and Linux headers
 		[[ -d '/usr/src' ]] && G_EXEC rm -Rf /usr/src/{,.??,.[^.]}*
 
-		# - Documentation dirs: https://github.com/MichaIng/DietPi/issues/3259
+		# - Documentation dirs: https://hub.fastgit.xyz/MichaIng/DietPi/issues/3259
 		#[[ -d '/usr/share/man' ]] && G_EXEC rm -R /usr/share/man
 		#[[ -d '/usr/share/doc' ]] && G_EXEC rm -R /usr/share/doc
 		#[[ -d '/usr/share/doc-base' ]] && G_EXEC rm -R /usr/share/doc-base
@@ -1261,23 +1261,23 @@ _EOF_
 		[[ -f '/lib/firmware/bootsplash.armbian' ]] && G_EXEC rm /lib/firmware/bootsplash.armbian
 		[[ -L '/etc/systemd/system/sysinit.target.wants/bootsplash-ask-password-console.path' ]] && G_EXEC rm /etc/systemd/system/sysinit.target.wants/bootsplash-ask-password-console.path
 
-		# - OMV: https://github.com/MichaIng/DietPi/issues/2994
+		# - OMV: https://hub.fastgit.xyz/MichaIng/DietPi/issues/2994
 		[[ -d '/etc/openmediavault' ]] && G_EXEC rm -R /etc/openmediavault
 		G_EXEC rm -f /etc/cron.*/openmediavault*
 		G_EXEC rm -f /usr/sbin/omv-*
 
-		# - RPi specific: https://github.com/MichaIng/DietPi/issues/1631#issuecomment-373965406
+		# - RPi specific: https://hub.fastgit.xyz/MichaIng/DietPi/issues/1631#issuecomment-373965406
 		[[ -f '/etc/profile.d/wifi-country.sh' ]] && G_EXEC rm /etc/profile.d/wifi-country.sh
 		[[ -f '/etc/sudoers.d/010_pi-nopasswd' ]] && G_EXEC rm /etc/sudoers.d/010_pi-nopasswd
-		[[ -d '/etc/systemd/system/dhcpcd.service.d' ]] && G_EXEC rm -R /etc/systemd/system/dhcpcd.service.d # https://github.com/RPi-Distro/pi-gen/blob/master/stage3/01-tweaks/00-run.sh
+		[[ -d '/etc/systemd/system/dhcpcd.service.d' ]] && G_EXEC rm -R /etc/systemd/system/dhcpcd.service.d # https://hub.fastgit.xyz/RPi-Distro/pi-gen/blob/master/stage3/01-tweaks/00-run.sh
 		#	Do not ship rc.local anymore. On DietPi /var/lib/dietpi/postboot.d should be used.
 		#	WIP: Mask rc-local.service and create symlink postboot.d/rc.local => /etc/rc.local for backwards compatibility?
-		[[ -f '/etc/rc.local' ]] && rm -v /etc/rc.local # https://github.com/RPi-Distro/pi-gen/blob/master/stage2/01-sys-tweaks/files/rc.local
+		[[ -f '/etc/rc.local' ]] && rm -v /etc/rc.local # https://hub.fastgit.xyz/RPi-Distro/pi-gen/blob/master/stage2/01-sys-tweaks/files/rc.local
 		[[ -d '/etc/systemd/system/rc-local.service.d' ]] && G_EXEC rm -R /etc/systemd/system/rc-local.service.d # Raspberry Pi OS
 		[[ -d '/etc/systemd/system/rc.local.service.d' ]] && G_EXEC rm -R /etc/systemd/system/rc.local.service.d
 		#	Below required if DietPi-PREP is executed from chroot/container, so RPi firstrun scripts are not executed
-		[[ -f '/etc/init.d/resize2fs_once' ]] && G_EXEC rm /etc/init.d/resize2fs_once # https://github.com/RPi-Distro/pi-gen/blob/master/stage2/01-sys-tweaks/files/resize2fs_once
-		# - Remove all autologin configs for all TTYs: https://github.com/MichaIng/DietPi/issues/3570#issuecomment-648988475, https://github.com/MichaIng/DietPi/issues/3628#issuecomment-653693758
+		[[ -f '/etc/init.d/resize2fs_once' ]] && G_EXEC rm /etc/init.d/resize2fs_once # https://hub.fastgit.xyz/RPi-Distro/pi-gen/blob/master/stage2/01-sys-tweaks/files/resize2fs_once
+		# - Remove all autologin configs for all TTYs: https://hub.fastgit.xyz/MichaIng/DietPi/issues/3570#issuecomment-648988475, https://hub.fastgit.xyz/MichaIng/DietPi/issues/3628#issuecomment-653693758
 		G_EXEC rm -f /etc/systemd/system/*getty@*.service.d/*autologin*.conf
 
 		# - make_nas_processes_faster cron job on ROCK64 + NanoPi + PINE A64(?) images
@@ -1304,7 +1304,7 @@ _EOF_
 
 		#-----------------------------------------------------------------------------------
 		# Boot Logo
-		[[ -f '/boot/boot.bmp' ]] && G_EXEC curl -sSfL "https://github.com/$G_GITOWNER/DietPi/raw/$G_GITBRANCH/.meta/images/dietpi-logo_boot.bmp" -o /boot/boot.bmp
+		[[ -f '/boot/boot.bmp' ]] && G_EXEC curl -sSfL "https://hub.fastgit.xyz/$G_GITOWNER/DietPi/raw/$G_GITBRANCH/.meta/images/dietpi-logo_boot.bmp" -o /boot/boot.bmp
 
 		#-----------------------------------------------------------------------------------
 		# Bash Profiles
@@ -1319,7 +1319,7 @@ _EOF_
 		ln -sfv /etc/profile.d/bash_completion.sh /etc/bashrc.d/dietpi-bash_completion.sh
 
 		#-----------------------------------------------------------------------------------
-		# setuid bit for sudo: https://github.com/MichaIng/DietPi/issues/794
+		# setuid bit for sudo: https://hub.fastgit.xyz/MichaIng/DietPi/issues/794
 		G_EXEC_DESC='Setting setuid bit for "sudo" executable' G_EXEC chmod 4755 /usr/bin/sudo
 
 		#-----------------------------------------------------------------------------------
@@ -1445,7 +1445,7 @@ _EOF_'
 		G_EXEC mkdir -p /root/.ssh
 		echo 'ssh.dietpi.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDE6aw3r6aOEqendNu376iiCHr9tGBIWPgfrLkzjXjEsHGyVSUFNnZt6pftrDeK7UX+qX4FxOwQlugG4fymOHbimRCFiv6cf7VpYg1Ednquq9TLb7/cIIbX8a6AuRmX4fjdGuqwmBq3OG7ZksFcYEFKt5U4mAJIaL8hXiM2iXjgY02LqiQY/QWATsHI4ie9ZOnwrQE+Rr6mASN1BVFuIgyHIbwX54jsFSnZ/7CdBMkuAd9B8JkxppWVYpYIFHE9oWNfjh/epdK8yv9Oo6r0w5Rb+4qaAc5g+RAaknHeV6Gp75d2lxBdCm5XknKKbGma2+/DfoE8WZTSgzXrYcRlStYN' > /root/.ssh/known_hosts
 
-		# ASUS TB WiFi: https://github.com/MichaIng/DietPi/issues/1760
+		# ASUS TB WiFi: https://hub.fastgit.xyz/MichaIng/DietPi/issues/1760
 		(( $G_HW_MODEL == 52 )) && G_CONFIG_INJECT '8723bs' '8723bs' /etc/modules
 
 		echo 'DietPi' > /etc/hostname
@@ -1581,7 +1581,7 @@ _EOF_'
 
 			G_EXEC_DESC='Removing foreign i386 DPKG architecture' G_EXEC dpkg --remove-architecture i386
 
-			# Fix grub install device: https://github.com/MichaIng/DietPi/issues/3700
+			# Fix grub install device: https://hub.fastgit.xyz/MichaIng/DietPi/issues/3700
 			dpkg-query -s grub-pc &> /dev/null && G_EXEC eval "debconf-set-selections <<< 'grub-pc grub-pc/install_devices multiselect /dev/sda'"
 
 			# Update initramfs with above changes
@@ -1618,21 +1618,21 @@ _EOF_'
 		elif (( $G_HW_MODEL == 70 ))
 		then
 			# Install latest kernel/drivers
-			G_EXEC curl -sSfL 'https://raw.githubusercontent.com/sparky-sbc/sparky-test/master/dragon_fly_check/uImage' -o /boot/uImage
-			G_EXEC curl -sSfLO 'https://raw.githubusercontent.com/sparky-sbc/sparky-test/master/dragon_fly_check/3.10.38.bz2'
+			G_EXEC curl -sSfL 'https://raw.fastgit.org/sparky-sbc/sparky-test/master/dragon_fly_check/uImage' -o /boot/uImage
+			G_EXEC curl -sSfLO 'https://raw.fastgit.org/sparky-sbc/sparky-test/master/dragon_fly_check/3.10.38.bz2'
 			G_EXEC tar -xf 3.10.38.bz2 -C /lib/modules/
 			G_EXEC rm 3.10.38.bz2
 			# - USB audio update
-			G_EXEC curl -sSfL 'https://raw.githubusercontent.com/sparky-sbc/sparky-test/master/dsd-marantz/snd-usb-audio.ko' -o /lib/modules/3.10.38/kernel/sound/usb/snd-usb-audio.ko
+			G_EXEC curl -sSfL 'https://raw.fastgit.org/sparky-sbc/sparky-test/master/dsd-marantz/snd-usb-audio.ko' -o /lib/modules/3.10.38/kernel/sound/usb/snd-usb-audio.ko
 			# - Ethernet update
-			G_EXEC curl -sSfL 'https://raw.githubusercontent.com/sparky-sbc/sparky-test/master/sparky-eth/ethernet.ko' -o /lib/modules/3.10.38/kernel/drivers/net/ethernet/acts/ethernet.ko
+			G_EXEC curl -sSfL 'https://raw.fastgit.org/sparky-sbc/sparky-test/master/sparky-eth/ethernet.ko' -o /lib/modules/3.10.38/kernel/drivers/net/ethernet/acts/ethernet.ko
 
 			# Boot args
 			cat << '_EOF_' > /boot/uenv.txt
 uenvcmd=setenv os_type linux;
 bootargs=earlyprintk clk_ignore_unused selinux=0 scandelay console=tty0 loglevel=1 real_rootflag=rw root=/dev/mmcblk0p2 rootwait init=/lib/systemd/systemd aotg.urb_fix=1 aotg.aotg1_speed=0 net.ifnames=0 systemd.unified_cgroup_hierarchy=0
 _EOF_
-			# Blacklist GPU and touch screen modules: https://github.com/MichaIng/DietPi/issues/699#issuecomment-271362441
+			# Blacklist GPU and touch screen modules: https://hub.fastgit.xyz/MichaIng/DietPi/issues/699#issuecomment-271362441
 			cat << '_EOF_' > /etc/modprobe.d/dietpi-disable_sparkysbc_touchscreen.conf
 blacklist owl_camera
 blacklist gsensor_stk8313
@@ -1694,14 +1694,14 @@ _EOF_
 			G_EXEC groupadd -rf i2c
 			G_EXEC groupadd -rf gpio
 
-			# Apply minimum GPU memory split for server usage: This applies a custom dtoverlay to disable VCSM: https://github.com/MichaIng/DietPi/pull/3900
+			# Apply minimum GPU memory split for server usage: This applies a custom dtoverlay to disable VCSM: https://hub.fastgit.xyz/MichaIng/DietPi/pull/3900
 			/boot/dietpi/func/dietpi-set_hardware gpumemsplit 16
 
 			# Disable RPi camera and codecs to add modules blacklist
 			/boot/dietpi/func/dietpi-set_hardware rpi-camera disable
 			/boot/dietpi/func/dietpi-set_hardware rpi-codec disable
 
-			# Update USBridgeSig Ethernet driver via postinst kernel script, until it has been merged into official RPi kernel: https://github.com/allocom/USBridgeSig/tree/master/ethernet
+			# Update USBridgeSig Ethernet driver via postinst kernel script, until it has been merged into official RPi kernel: https://hub.fastgit.xyz/allocom/USBridgeSig/tree/master/ethernet
 			cat << '_EOF_' > /etc/kernel/postinst.d/dietpi-USBridgeSig
 #!/bin/bash
 # Only available for v7+
@@ -1709,7 +1709,7 @@ _EOF_
 # Only reasonable for USBridgeSig = CM 3+
 grep -q '^Revision.*10.$' /proc/cpuinfo || exit 0
 echo "[ INFO ] Updating ASIX AX88179 driver for kernel $1 with ARM-optimised build"
-echo '[ INFO ] - by Allo: https://github.com/allocom/USBridgeSig/tree/master/ethernet'
+echo '[ INFO ] - by Allo: https://hub.fastgit.xyz/allocom/USBridgeSig/tree/master/ethernet'
 echo '[ INFO ] Estimating required module layout...'
 module_layout=$(modprobe --dump-modversions /lib/modules/$1/kernel/drivers/net/usb/asix.ko | mawk '/module_layout/{print $1;exit}') || exit 0
 echo '[ INFO ] Downloading stable branch driver...'
@@ -1786,7 +1786,7 @@ _EOF_
 		# Armbian special
 		if [[ -f '/boot/armbianEnv.txt' ]]
 		then
-			# Disable bootsplash logo, as we removed the file above: https://github.com/MichaIng/DietPi/issues/3932#issuecomment-852376681
+			# Disable bootsplash logo, as we removed the file above: https://hub.fastgit.xyz/MichaIng/DietPi/issues/3932#issuecomment-852376681
 			G_CONFIG_INJECT 'bootlogo=' 'bootlogo=false' /boot/armbianEnv.txt
 
 			# Reset default kernel log verbosity, reduced to "1" on most Armbian images
@@ -1796,7 +1796,7 @@ _EOF_
 			G_CONFIG_INJECT 'docker_optimizations=' 'docker_optimizations=off' /boot/armbianEnv.txt
 		fi
 
-		# Apply cgroups-v2 workaround if the kernel does not support it: https://github.com/MichaIng/DietPi/issues/4705
+		# Apply cgroups-v2 workaround if the kernel does not support it: https://hub.fastgit.xyz/MichaIng/DietPi/issues/4705
 		# - This is required on Bullseye only, but we'll apply it on Buster as well to cover later distro upgrades, since the logic is too complicated for our upgrade blog article.
 		if [[ $G_HW_MODEL != 75 && ! $(find /lib/modules -maxdepth 1 -type d -name '5.[0-9]*') ]]
 		then
@@ -1964,7 +1964,7 @@ _EOF_
 		G_DIETPI-NOTIFY 0 'Completed, disk can now be saved to .img for later use, or, reboot system to start first run of DietPi.'
 
 		# shellcheck disable=SC2016
-		G_DIETPI-NOTIFY 0 'To create an .img file, you can "poweroff" and run the following command from the host/external DietPi system:\n\t- bash -c "$(curl -sSfL https://raw.githubusercontent.com/MichaIng/DietPi/master/.build/images/dietpi-imager)"'
+		G_DIETPI-NOTIFY 0 'To create an .img file, you can "poweroff" and run the following command from the host/external DietPi system:\n\t- bash -c "$(curl -sSfL https://raw.fastgit.org/MichaIng/DietPi/master/.build/images/dietpi-imager)"'
 
 	}
 
